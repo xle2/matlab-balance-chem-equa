@@ -1,0 +1,7 @@
+function equationArray = Util_ReadExcel( inputExcelFile )
+%UTIL_READEXCEL Summary of this function goes here
+%   Detailed explanation goes here
+
+
+end
+
