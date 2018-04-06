@@ -28,5 +28,5 @@ for i = 1:length(rawData)
     disp('---- End of One Loop ----')
 end
 
-
 % disp(tempResult.(elementName{1}))
+% disp(tempResult.(elementName{1}))% disp(tempResult.(elementName{1}))
