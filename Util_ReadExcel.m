@@ -3,10 +3,10 @@ function equationArray = Util_ReadExcel( inputExcelFile )
 %   Detailed explanation goes here
 
 %Example input: {'H2O' 'H2' 'O2'}
-% filename = input('Please enter a filename: ', 's');
+filename = input('Please enter a filename: ', 's');
 
 % TODO - delete this line in production
-inputExcelFile = 'data.xlsx'
+inputExcelFile = filename;
 
 [num,txt,raw] = xlsread(inputExcelFile);
 

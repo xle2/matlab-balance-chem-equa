@@ -23,6 +23,7 @@ u = regexp(string,elements,'tokens');
     %'start' returns starting indices of all matches
     %'end' returns ending indices of all matches
     %'token' returns text of each captured token
+    
 
 for i = 1:length(u{1,1})
     atom(i) = cellfun(@(x)x{i}(1),u,'UniformOutput',false);
@@ -32,7 +33,8 @@ for i = 1:length(u{1,1})
   
     %For example, if string = 'H2O', then tok = 1x2 cell of H and O
     
-    numAtom(i) = cellfun(@(v)v{i}(2),u,'UniformOutput',false);  
+    numAtom(i) = cellfun(@(v)v{i}(2),u,'UniformOutput',false); 
+   
     %Extract counts from the second part of each token
     
     numAtom{i} = str2double(numAtom{i});    %convert to number

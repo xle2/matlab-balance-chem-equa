@@ -1,3 +1,4 @@
+function structResult = countAtom()
 % Clear screen and Variable
 % ----------------------------------------------------------------------- %
 close all
@@ -9,7 +10,6 @@ clc
 % ----------------------------------------------------------------------- %
 dataStructure = 0;
 rawData = 0;
-
 
 % Business Logic
 % ----------------------------------------------------------------------- %
@@ -27,16 +27,11 @@ rawData = 0;
 %       2  0
 %       O  2    
 
-    % -----------------------------------------------------------%
-    
-% Read Excel File and return raw data
+%Start here
+% ----------------------------------------------------------------------- %
+
 rawData = Util_ReadExcel();
-
-% %q = cellfun(@Util_StructConvert,rawData,'Uniform',false);
-% %why does this not work?
-
-
-a = num2cell(rawData) 
+a = num2cell(rawData); 
 %converts array rawData into cell array a by placing
 %each element of rawData into a separate cell in a
 q = cellfun(@Util_StructConvert,a,'Uniform',false);
@@ -63,6 +58,7 @@ end
     %example: 'H2' does not contain O --> assign 0
 
 
-r = reshape([q{:}],size(rawData));
+structResult = reshape([q{:}],size(rawData));
 %Form the structure array to have the same shape as rawData
 
+end
