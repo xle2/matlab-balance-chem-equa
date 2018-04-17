@@ -5,13 +5,7 @@ close all
 clear variables
 clc
 
-
-% Declare global variables
-% ----------------------------------------------------------------------- %
-dataStructure = 0;
-rawData = 0;
-
-% Business Logic
+% Explanation
 % ----------------------------------------------------------------------- %
 %This script returns a structure array holding the numbers of atoms in each
 %species of the chemical formulas. 
@@ -30,11 +24,14 @@ rawData = 0;
 %Start here
 % ----------------------------------------------------------------------- %
 
-rawData = Util_ReadExcel();
-a = num2cell(rawData); 
-%converts array rawData into cell array a by placing
-%each element of rawData into a separate cell in a
-q = cellfun(@Util_StructConvert,a,'Uniform',false);
+%Example input: {'H2O' 'H2' 'O2'}
+filename = input('Please enter a filename: ', 's');
+[num,txt,raw] = xlsread(filename);
+
+stringInput = raw;
+%get the input from the excel file given by the user
+
+q = cellfun(@structConvert,stringInput,'Uniform',false);
 %apply Util_StructConvert to every element of input
 
 
@@ -58,7 +55,7 @@ end
     %example: 'H2' does not contain O --> assign 0
 
 
-structResult = reshape([q{:}],size(rawData));
+structResult = reshape([q{:}],size(stringInput));
 %Form the structure array to have the same shape as rawData
 
 end
