@@ -1,15 +1,27 @@
 function structOne = structConvert(stringInput)
 
-structOne = struct([]);
-%Util_StructConvert returns a struct. Input of this function is a cell
-%array
-%To call Util_StructConvert, type Util_StructConvert({'name_of_chemical'})
-%Example: Util_StructConvert({'CH4'})   
+% ---------------------------------------------------------------------- %
+%                                   ABOUT
+%Util_StructConvert returns a struct. Input of this function is a chemical
+%formula 'string'
+%To call Util_StructConvert, type Util_StructConvert('name_of_chemical')
+%Example: Util_StructConvert('CH4')   
   %This returns a struct holding the numbers of atoms in each species
   % C:  1
   % H:  4
+% ---------------------------------------------------------------------- %
+%                            SOULTION APPROACH
+%The idea is to split each elements and their atom counts accordingly
+ %For example, if the program is given CH4, it would first split the string
+ %into 'C' 'H' '4'
+ %Then from there, putting them into a structure
+% ---------------------------------------------------------------------- %
 
-%returns token for element AND a number
+
+%creating an expression containing all possible elements from the periodic
+%table
+%using 'regrex' to compare the input string and the 'elements' expression
+ %this will returns token for element AND a number
 %the '(\d*\.\d+|\d*)' denotes number
 elements = ['(A[lrsgutcm]|B[eraihk]?|C[aroudlsnemf]?|D[bsy]|E[urs]|', ...
                 'F[erlm]?|G[aed]|H[efgso]?|I[nr]?|K[r]?|L[ivaur]|', ...
@@ -29,8 +41,9 @@ group ='|\(([^\)]*)\)(\d*\.\d+|\d*)|(\d*\.\d+|\d*)';
 
 
 % ---------------------------------------------------------------------- %
-% THIS WORKS FOR CASE WITH NO GROUPS
-% IT WAS HARD TO CONTINUE ON BECAUSE OF INDEXING 
+%                           IGNORE THIS PART
+%THIS WORKS FOR CASE WITH NO GROUPS
+%IT WAS HARD TO CONTINUE ON BECAUSE OF INDEXING 
 %
 % u = regexp(string,elements,'tokens');
 % 
@@ -73,22 +86,32 @@ parts = regexp(stringInput,[elements,group],'tokens');
 %elements: match an element with a number that follows
 %group: match parenthesis with a number that follows
 %return the token
-%for example, if the cell is 'Ca(OH)2', parts would have 2 cells
+%for example, if the string is 'Ca(OH)2', 'parts' would have 2 cells
  %1x2 cell with Ca and ''
  %1x2 cell with OH and 2
+
+%if parts is empty, it means that the input string did not match the expression
+%therefore, display error message
+if isempty(parts) == 1
+    disp('There is no such element. Please check your input');
+    %then stop the program
+    return
+end
     
-atom = cellfun(@(v)v{1},parts,'Uni',false);
+atom = cellfun(@(v)v{1},parts,'UniformOutput',false);
 %get the atoms from the first part of 'parts' - the token
 %setting UniformOutput to be false so that the cellfun function combines
 %the output into cellarray
 
-numAtom = cellfun(@(v)v{2},parts,'Uni',false);
+numAtom = cellfun(@(v)v{2},parts,'UniformOutput',false);
 %Extract counts from the second part of each token
 numAtom = str2double(numAtom);
 %convert to doubles
 numAtom(isnan(numAtom)) = 1;
 %set the count is empty, set equals to 1
 
+structOne = struct([]); 
+%initializing an empty struct
 
 %making the structure    
 for i = 1:length(parts) %loop over the parts
@@ -98,7 +121,7 @@ for i = 1:length(parts) %loop over the parts
         %if the field already existed, add onto it
         %otherwise, add another field
         if isfield(structOne,atom{i})
-            structOne.(atom{i}) = r.(atom{i}) + numAtom(i);
+            structOne.(atom{i}) = structOne.(atom{i}) + numAtom(i);
         else
             structOne(1).(atom{i}) = numAtom(i);
         end
@@ -107,18 +130,19 @@ for i = 1:length(parts) %loop over the parts
         %group
         %here, a recursion is carry out to find how many atoms there are in
         %that group
-        q = structConvert(atom{i});
-        f = fields(q);
+        recursive = structConvert(atom{i});
+        f = fields(recursive);
         for j = 1:length(f)
             if isfield(structOne,f{j})
-                structOne.(f{j}) = structOne.(f{j}) + numAtom(i)*q.(f{j});
+                structOne.(f{j}) = structOne.(f{j}) + numAtom(i)*recursive.(f{j});
+                %this is just like the one for case of single element
+                %except we would need to multiply in the number for every
+                %elements in the parenthesis
             else
-                structOne(1).(f{j}) = numAtom(i)*q.(f{j});
+                structOne(1).(f{j}) = numAtom(i)*recursive.(f{j});
             end
         end
     end
 end
-
-
-       
+      
 end

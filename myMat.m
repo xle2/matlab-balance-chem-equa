@@ -1,4 +1,4 @@
-function matrixResult = myMat()
+function matrixResult = myMat(structIn)
 %computes the matrix for the given set of chemical species. The input is a 
 %structure array of the numbers of atoms each species have (the structure 
 %array obtained from countAtoms)
@@ -18,11 +18,11 @@ function matrixResult = myMat()
 %columns of the matrix
  %The length of the field itself will be the number of row of the matrix
 
-%take the struct from countATom as an input
-r = countAtom;
+%take the struct from countAtom as an input
+r = structIn;
 
 %the size of the struct is 
-atoms = fields(r);
+atoms = fields(structIn);
 atoms = atoms';
 
 %creating the matrix, do a loop

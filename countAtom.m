@@ -1,12 +1,14 @@
-function structResult = countAtom()
-% Clear screen and Variable
-% ----------------------------------------------------------------------- %
-close all
-clear variables
-clc
+function structResult = countAtom(cellInput)
 
-% Explanation
+
 % ----------------------------------------------------------------------- %
+%                       CLEAR SCREEN AND VARIABLES
+% close all
+% clear variables
+% clc
+
+% ----------------------------------------------------------------------- %
+%                                   ABOUT
 %This script returns a structure array holding the numbers of atoms in each
 %species of the chemical formulas. 
 %The input is taken from a file given by the user. This should be an excel
@@ -24,16 +26,24 @@ clc
 %Start here
 % ----------------------------------------------------------------------- %
 
-%Example input: {'H2O' 'H2' 'O2'}
-filename = input('Please enter a filename: ', 's');
-[num,txt,raw] = xlsread(filename);
+% switch class(varargin)
+%     case class(varargin) == 'char' %if the input is a string
+%         stringInput = varargin;
+%     case isfile(varargin) == 1 %if the input is a file
+%         filename = varargin;
+%         [num,txt,raw] = xlsread(filename);
+%         stringInput = raw;
+% end
 
-stringInput = raw;
-%get the input from the excel file given by the user
 
-q = cellfun(@structConvert,stringInput,'Uniform',false);
+% q = cellfun(@structConvert,cellInput,'Uniform',false); %this works
+% too!!
 %apply Util_StructConvert to every element of input
 
+
+for i = 1:length(cellInput)
+    q{i} = structConvert(cellInput{i});
+end
 
 atoms = {};
 for i = 1:length(q)
@@ -55,7 +65,7 @@ end
     %example: 'H2' does not contain O --> assign 0
 
 
-structResult = reshape([q{:}],size(stringInput));
+structResult = reshape([q{:}],size(cellInput));
 %Form the structure array to have the same shape as rawData
 
 end
