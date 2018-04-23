@@ -10,7 +10,7 @@ function [ output_args ] = chemBalanceGUI( input_args )
 %calculation. The resulting coeffient will be written into the result excel
 %file
 
-%Start here
+%                                 START HERE
 % ----------------------------------------------------------------------- %
 figure;
 

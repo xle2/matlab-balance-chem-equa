@@ -16,85 +16,37 @@ function structOne = structConvert(stringInput)
  %into 'C' 'H' '4'
  %Then from there, putting them into a structure
 % ---------------------------------------------------------------------- %
-%creating an expression containing all possible elements from the periodic
+%Creating an expression containing all possible elements from the periodic
 %table
 %using 'regrex' to compare the input string and the 'elements' expression
  %this will returns token for element AND a number
-%the '(\d*\.\d+|\d*)' denotes number
+%the '(\d*))' denotes number
 
-elements = ['(A[lrsgutcm]|B[eraihk]?|C[aroudlsnemf]?|D[bsy]|E[urs]|', ...
-                'F[erlm]?|G[aed]|H[efgso]?|I[nr]?|K[r]?|L[ivaur]|', ...
-                'M[gnotcd]|N[eaibhdpo]?|O[sg]?|P[dtbormau]?|R[buhenafg]|', ...
-                'S[icernbgm]?|T[icealsbmh]|U|V|W|X[e]|Y[b]?|Z[nr])',...
-                '(\d*\.\d+|\d*)']; %'\d*' -> matches any number of consecutive digits
-                                   %'\d*' -> matches any number of
-                                     %consecutive digits and match 1 or more
-                                     %times consecutively
-  %'expr?' -> lazy expression: match as few characters as necessary; 0 times or 1 time
+%match letter(s) followed by a number
+elements = ['(Al|Ar|As|Ag|Au|At|Ac|Am|Db|Ds|Dy|Er|Er|Es|Ga|Ge|Gd|Li|Lv|',...
+    'La|Lu|Lr|Mg|Mn|Mo|Mt|Mc|Md|Rb|Ru|Rh|Re|Rn|Ra|Rf|Rg|Ti|Tc|Te|Ta|'...
+    'Tl|Ts|Tb|Tm|Th|U|V|W|Xe|Zn|Zr|'...
+    'B[eraihk]?|C[aroudlsnemf]?|F[erlm]?|H[efgso]?|K[r]?|N[eaibhdpo]?|'...
+    'O[sg]?|P[dtbormau]?|S[icernbgm]?|Y[b]?)'...
+    '(\d*)'];
   %'expr1|expr2' -> match expression expr1 or expression expr2; if there is a
    %match with expr1, then expr2 is ignore
+  %'expr?' -> match the expression when it occurs 0 times or 1 time
+   %In case of elements like C,Ca,Cr, if the user input Ca2O, we want to
+   %token Ca, not C; if the user input CH4, we want to token C, not Ca or
+   %Cr,... therefore, use bracket [] to indicate match any one of the
+   %characters listed
+   %C[aroudlsne]? %match anyone of the characters listed
 
    
-group ='|\(([^\)]*)\)(\d*\.\d+|\d*)';   
-% group ='|\(([^\)]*)\)(\d*\.\d+|\d*)|(\d*\.\d+|\d*)';
 %match parenthesis followed by a number
 %This is for case of a group
 %the first expression '|\(([^\)]*)\)(\d*\.\d+|\d*)' search for parenthesis
-%Example: Ca(OH)2 --> There is 1Ca, 2O, and 2H
-
-
-% ---------------------------------------------------------------------- %
-%                           IGNORE THIS PART
-%This does not work because it will not check correctly
-%An example would be 'C' and 'Ca'. If we entered 'Ca', it would return 'Ca' 
-%since 'C' comes first. That is not what we want
-
-% elements = ['(H|He|Li|Be|B|Ca|C|N|O|F|Ne|Na|Mg|Al|Si|P|S|Cl|Ar|K|Ca|Sc|Ti|',...
-%     'V|Cr|Mn|Fe|Co|Ni|Cu|Zn|Ga|Ge|As|Se|Br|Kr|Rb|Sr|Y|Zr|Nb|Mo|Tc|Ru|Rh|Pd|',...
-%     'Ag|Cd|In|Sn|Sb|Te|I|Xe|Cs|Ba|Lu|Hf|Ta|W|Re|Os|Ir|Pt|Au|Hg|Tl|Pb|Bi|',...
-%     'Po|At|Rn|Fr|Ra|Lr|Rf|Db|Sg|Bh|Hs|Mt|Ds|Rg|Cn|La',...
-%     'Ce|Pr|Nd|Pm|Sm|Eu|Gd|Tb|Dy|Ho|Er|Tm|Yb|Ac|Th|Pa|U|Np|Pu|Am|Cm|Bk|',...
-%     'Cf|Es|Fm|Md|No)','(\d*\.\d+|\d*)'];
-
-
-%THIS WORKS FOR CASE WITH NO GROUPS
-%IT WAS HARD TO CONTINUE ON BECAUSE OF INDEXING 
-%
-% u = regexp(string,elements,'tokens');
-% 
-%     %regexp matches regular expression (case sensitive)
-%     %Tokens are portions of the matched text that correspond to portions of the regular expression
-%     %'start' returns starting indices of all matches
-%     %'end' returns ending indices of all matches
-%     %'token' returns text of each captured token
-%     
-% 
-% for i = 1:length(u{1,1})
-%     atom(i) = cellfun(@(x)x{i}(1),u,'UniformOutput',false);
-%     %Extract the atom from the first part of each token
-%      %setting UniformOutput to be false so that the cellfun function combines
-%      %the output into cellarray
-%   
-%     %For example, if string = 'H2O', then tok = 1x2 cell of H and O
-%     
-%     numAtom(i) = cellfun(@(v)v{i}(2),u,'UniformOutput',false); 
-%    
-%     %Extract counts from the second part of each token
-%     
-%     numAtom{i} = str2double(numAtom{i});    %convert to number
-%     if isnan(numAtom{i}) == 1
-%         numAtom{i} =1;                      %if string is empty, set it equal to 1
-%     end
-% end
-% 
-% %this should be r.(char(atom{1}) = numatom{1}
-% %               r.(char(atom{2}) = numatom{2}
-% %atom needs to be of class char, []
-% for j = 1:length(atom)
-%     struct.(char(atom{j})) = numAtom{j};
-% end
-
-% ---------------------------------------------------------------------- %
+%Example: Ca(OH)2 --> There is 1Ca, 2O, and 2H   
+group = ('|\(([^\)]*)\)((\d*))');      
+%match letter followed by parenthesis and then closed with parenthesis '\(\)'
+%match the expression above and followed by a number '(\d*\.\d+|\d*)'
+%[^\)] any character not contained within the brackets
 
 parts = regexp(stringInput,[elements,group],'tokens');
 %match the input with the expressions denoted in elements and group
@@ -108,15 +60,19 @@ parts = regexp(stringInput,[elements,group],'tokens');
 %if parts is empty, it means that the input string did not match the expression
 %therefore, display error message
 if isempty(parts) == 1
-    disp('There is no such element. Please check your input');
+    %throw an error and display error message
+    msg = 'There is no such element. Please check your input';
     %then stop the program
-    return
+    error(msg)
+       
 end
     
 atom = cellfun(@(v)v{1},parts,'UniformOutput',false);
-%get the atoms from the first part of 'parts' - the token
+%cellfun applies function to each cell in cell array
 %setting UniformOutput to be false so that the cellfun function combines
 %the output into cellarray
+%this line get the atoms from the first part of 'parts' - the token
+
 
 numAtom = cellfun(@(v)v{2},parts,'UniformOutput',false);
 %Extract counts from the second part of each token
@@ -124,6 +80,7 @@ numAtom = str2double(numAtom);
 %convert to doubles
 numAtom(isnan(numAtom)) = 1;
 %set the count is empty, set equals to 1
+
 
 structOne = struct([]); 
 %initializing an empty struct

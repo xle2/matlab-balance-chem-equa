@@ -1,61 +1,53 @@
 function structResult = countAtom(cellInput)
 
-
-% ----------------------------------------------------------------------- %
-%                       CLEAR SCREEN AND VARIABLES
-% close all
-% clear variables
-% clc
-
 % ----------------------------------------------------------------------- %
 %                                   ABOUT
 %This script returns a structure array holding the numbers of atoms in each
 %species of the chemical formulas. 
-%The input is taken from a file given by the user. This should be an excel
-%file, containing only ONE chemical equation that needs to be balanced. 
+%The input is a cell array. The output is a struct 
+%Here, 'function' function is used. The countAtom called the function
+%structConvert to find the struct of each element. Then countAtom makes a
+%big overall struct symbolize every element of the input array
 %
 %EXAMPLE
 %
-%Given H20  H2  O2 (from the excel file)
+%Given {'H20','H2','O2'}
 %Return 1x3 struct with 2 fields
 %       H  O
 %       2  1
 %       2  0
 %       O  2 
-%OR type countAtom({'H2O','H2','O2'}) to run
+%Type countAtom({'H2O','H2','O2'}) to run
 
-%Start here
+%                                 START HERE
 % ----------------------------------------------------------------------- %
 
-cellInput = cellInput;
-
-%apply Util_StructConvert to every element of input
+%Apply structConvert to every element of input
 for i = 1:length(cellInput)
-    q{i} = structConvert(cellInput{i});
+    combineStruct{i} = structConvert(cellInput{i});
 end
-% q = cellfun(@structConvert,cellInput,'Uniform',false); %this works
-% too!!
 
-%Union of all atomic species
-%returns the combined data from atoms and fields of q (the elements)
+%Set union of two array with no repetition
+%returns the combined data from atoms and the fields of combineStruct (the
+%elements) with no repetition
 atoms = {};
-for i = 1:length(q)
-    atoms = union(atoms, fields(q{i}));
+for i = 1:length(combineStruct)
+    atoms = union(atoms, fields(combineStruct{i}));
 end
 
 %Add all atomic species to all structures
 %If an element is not present in a formula, assign 0
     %example: 'H2' does not contain O --> assign 0
-for i = 1:length(q(:))
+for i = 1:length(combineStruct(:))
         for j = 1:length(atoms)
-            if ~ismember(atoms{j},fields(q{i}))
-                q{i}.(atoms{j}) = 0;
+            if ~ismember(atoms{j},fields(combineStruct{i}))
+                combineStruct{i}.(atoms{j}) = 0;
             end
         end
 end
 
-%Form the structure array to have the same shape as rawData
-structResult = reshape([q{:}],size(cellInput));
+%Form the structure array to have the same shape as cellInput
+structResult = reshape([combineStruct{:}],size(cellInput));
 
 end
 
@@ -63,10 +55,10 @@ function structOne = structConvert(stringInput)
 
 % ---------------------------------------------------------------------- %
 %                                   ABOUT
-%Util_StructConvert returns a struct. Input of this function is a chemical
+%structConvert returns a struct. Input of this function is a chemical
 %formula 'string'
-%To call Util_StructConvert, type Util_StructConvert('name_of_chemical')
-%Example: Util_StructConvert('CH4')   
+%To call structConvert, type structConvert('name_of_chemical')
+%Example: structConvert('CH4')   
   %This returns a struct holding the numbers of atoms in each species
   % C:  1
   % H:  4
@@ -76,33 +68,40 @@ function structOne = structConvert(stringInput)
  %For example, if the program is given CH4, it would first split the string
  %into 'C' 'H' '4'
  %Then from there, putting them into a structure
-% ---------------------------------------------------------------------- %
-%creating an expression containing all possible elements from the periodic
-%table
-%using 'regrex' to compare the input string and the 'elements' expression
- %this will returns token for element AND a number
-%the '(\d*\.\d+|\d*)' denotes number
 
-elements = ['(A[lrsgutcm]|B[eraihk]?|C[aroudlsnemf]?|D[bsy]|E[urs]|', ...
-                'F[erlm]?|G[aed]|H[efgso]?|I[nr]?|K[r]?|L[ivaur]|', ...
-                'M[gnotcd]|N[eaibhdpo]?|O[sg]?|P[dtbormau]?|R[buhenafg]|', ...
-                'S[icernbgm]?|T[icealsbmh]|U|V|W|X[e]|Y[b]?|Z[nr])',...
-                '(\d*\.\d+|\d*)']; %'\d*' -> matches any number of consecutive digits
-                                   %'\d*' -> matches any number of
-                                     %consecutive digits and match 1 or more
-                                     %times consecutively
-  %'expr?' -> lazy expression: match as few characters as necessary; 0 times or 1 time
+% ---------------------------------------------------------------------- %
+%                                START HERE
+%First of all, create an expression containing all possible elements from the periodic
+%table
+%Then, use 'regrex' to compare the input string and the expression
+ %this will returns token for element AND a number
+%the '(\d*))' denotes number
+
+%match letter(s) followed by a number
+elements = ['(Al|Ar|As|Ag|Au|At|Ac|Am|Db|Ds|Dy|Er|Er|Es|Ga|Ge|Gd|Li|Lv|',...
+    'La|Lu|Lr|Mg|Mn|Mo|Mt|Mc|Md|Rb|Ru|Rh|Re|Rn|Ra|Rf|Rg|Ti|Tc|Te|Ta|'...
+    'Tl|Ts|Tb|Tm|Th|U|V|W|Xe|Zn|Zr|'...
+    'B[eraihk]?|C[aroudlsnemf]?|F[erlm]?|H[efgso]?|K[r]?|N[eaibhdpo]?|'...
+    'O[sg]?|P[dtbormau]?|S[icernbgm]?|Y[b]?)'...
+    '(\d*)'];
   %'expr1|expr2' -> match expression expr1 or expression expr2; if there is a
    %match with expr1, then expr2 is ignore
+  %'expr?' -> match the expression when it occurs 0 times or 1 time
+   %In case of elements like C,Ca,Cr, if the user input Ca2O, we want to
+   %token Ca, not C; if the user input CH4, we want to token C, not Ca or
+   %Cr,... therefore, use bracket [] to indicate match any one of the
+   %characters listed
+   %C[aroudlsne]? %match anyone of the characters listed
 
    
-group ='|\(([^\)]*)\)(\d*\.\d+|\d*)';   
-% group ='|\(([^\)]*)\)(\d*\.\d+|\d*)|(\d*\.\d+|\d*)';
 %match parenthesis followed by a number
 %This is for case of a group
 %the first expression '|\(([^\)]*)\)(\d*\.\d+|\d*)' search for parenthesis
-%Example: Ca(OH)2 --> There is 1Ca, 2O, and 2H
-
+%Example: Ca(OH)2 --> There is 1Ca, 2O, and 2H   
+group = ('|\(([^\)]*)\)((\d*))');      
+%match letter followed by parenthesis and then closed with parenthesis '\(\)'
+%match the expression above and followed by a number '(\d*\.\d+|\d*)'
+%[^\)] any character not contained within the brackets
 
 parts = regexp(stringInput,[elements,group],'tokens');
 %match the input with the expressions denoted in elements and group
@@ -116,25 +115,30 @@ parts = regexp(stringInput,[elements,group],'tokens');
 %if parts is empty, it means that the input string did not match the expression
 %therefore, display error message
 if isempty(parts) == 1
-    disp('There is no such element. Please check your input');
+    %throw an error and display error message
+    msg = 'There is no such element. Please check your input';
     %then stop the program
-    return
+    error(msg)
+       
 end
-    
+
+%Get the atoms from the first part of 'parts' - the token
 atom = cellfun(@(v)v{1},parts,'UniformOutput',false);
-%get the atoms from the first part of 'parts' - the token
+%cellfun applies function to each cell in cell array
 %setting UniformOutput to be false so that the cellfun function combines
 %the output into cellarray
 
-numAtom = cellfun(@(v)v{2},parts,'UniformOutput',false);
+
 %Extract counts from the second part of each token
+numAtom = cellfun(@(v)v{2},parts,'UniformOutput',false);
 numAtom = str2double(numAtom);
 %convert to doubles
 numAtom(isnan(numAtom)) = 1;
 %set the count is empty, set equals to 1
 
-structOne = struct([]); 
+
 %initializing an empty struct
+structOne = struct([]); 
 
 %making the structure    
 for i = 1:length(parts) %loop over the parts
