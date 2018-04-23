@@ -35,4 +35,13 @@ end
 
 matrixResult = A;
 
+%graphing
+% figure
+% bar(A')
+% legend(atoms);
+% label = countAtom(cellInput);
+% set(gca,'XTickLabel',{'H2O','O2','H2'})
+
+
+
 end

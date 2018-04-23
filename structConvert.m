@@ -16,13 +16,12 @@ function structOne = structConvert(stringInput)
  %into 'C' 'H' '4'
  %Then from there, putting them into a structure
 % ---------------------------------------------------------------------- %
-
-
 %creating an expression containing all possible elements from the periodic
 %table
 %using 'regrex' to compare the input string and the 'elements' expression
  %this will returns token for element AND a number
 %the '(\d*\.\d+|\d*)' denotes number
+
 elements = ['(A[lrsgutcm]|B[eraihk]?|C[aroudlsnemf]?|D[bsy]|E[urs]|', ...
                 'F[erlm]?|G[aed]|H[efgso]?|I[nr]?|K[r]?|L[ivaur]|', ...
                 'M[gnotcd]|N[eaibhdpo]?|O[sg]?|P[dtbormau]?|R[buhenafg]|', ...
@@ -35,13 +34,29 @@ elements = ['(A[lrsgutcm]|B[eraihk]?|C[aroudlsnemf]?|D[bsy]|E[urs]|', ...
   %'expr1|expr2' -> match expression expr1 or expression expr2; if there is a
    %match with expr1, then expr2 is ignore
 
-group ='|\(([^\)]*)\)(\d*\.\d+|\d*)|(\d*\.\d+|\d*)';
-%in case there is a group
+   
+group ='|\(([^\)]*)\)(\d*\.\d+|\d*)';   
+% group ='|\(([^\)]*)\)(\d*\.\d+|\d*)|(\d*\.\d+|\d*)';
+%match parenthesis followed by a number
+%This is for case of a group
+%the first expression '|\(([^\)]*)\)(\d*\.\d+|\d*)' search for parenthesis
 %Example: Ca(OH)2 --> There is 1Ca, 2O, and 2H
 
 
 % ---------------------------------------------------------------------- %
 %                           IGNORE THIS PART
+%This does not work because it will not check correctly
+%An example would be 'C' and 'Ca'. If we entered 'Ca', it would return 'Ca' 
+%since 'C' comes first. That is not what we want
+
+% elements = ['(H|He|Li|Be|B|Ca|C|N|O|F|Ne|Na|Mg|Al|Si|P|S|Cl|Ar|K|Ca|Sc|Ti|',...
+%     'V|Cr|Mn|Fe|Co|Ni|Cu|Zn|Ga|Ge|As|Se|Br|Kr|Rb|Sr|Y|Zr|Nb|Mo|Tc|Ru|Rh|Pd|',...
+%     'Ag|Cd|In|Sn|Sb|Te|I|Xe|Cs|Ba|Lu|Hf|Ta|W|Re|Os|Ir|Pt|Au|Hg|Tl|Pb|Bi|',...
+%     'Po|At|Rn|Fr|Ra|Lr|Rf|Db|Sg|Bh|Hs|Mt|Ds|Rg|Cn|La',...
+%     'Ce|Pr|Nd|Pm|Sm|Eu|Gd|Tb|Dy|Ho|Er|Tm|Yb|Ac|Th|Pa|U|Np|Pu|Am|Cm|Bk|',...
+%     'Cf|Es|Fm|Md|No)','(\d*\.\d+|\d*)'];
+
+
 %THIS WORKS FOR CASE WITH NO GROUPS
 %IT WAS HARD TO CONTINUE ON BECAUSE OF INDEXING 
 %
